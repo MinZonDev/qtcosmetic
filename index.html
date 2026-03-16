@@ -4,14 +4,13 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Luxe Beauty — Mỹ Phẩm Nhập Khẩu Chính Hãng</title>
+    <title>QT Cosmetic — Mỹ Phẩm Chính Hãng</title>
     <meta name="description"
-        content="Khám phá bộ sưu tập mỹ phẩm nhập khẩu chính hãng từ các thương hiệu hàng đầu thế giới. Skincare, Makeup, Nước hoa cao cấp với giá tốt nhất." />
+        content="Khám phá bộ sưu tập mỹ phẩm chính hãng từ các thương hiệu hàng đầu. Skincare, Makeup, Nước hoa cao cấp với giá tốt nhất." />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="Luxe Beauty — Mỹ Phẩm Nhập Khẩu Chính Hãng" />
-    <meta property="og:description"
-        content="Khám phá bộ sưu tập mỹ phẩm nhập khẩu chính hãng từ các thương hiệu hàng đầu." />
+    <meta property="og:title" content="QT Cosmetic — Mỹ Phẩm Chính Hãng" />
+    <meta property="og:description" content="Khám phá bộ sưu tập mỹ phẩm chính hãng từ các thương hiệu hàng đầu." />
     <meta property="og:type" content="website" />
 
     <!-- Google Fonts -->
@@ -36,7 +35,11 @@
             <a href="/" class="header__logo">
                 <span class="logo-icon">✦</span> Luxe Beauty
             </a>
-            <p class="header__tagline">Mỹ Phẩm Nhập Khẩu Chính Hãng</p>
+            <nav class="header__nav">
+                <a href="index.html" class="header__nav-link active">Sản phẩm</a>
+                <a href="review.html" class="header__nav-link">Đánh giá</a>
+            </nav>
+            <p class="header__tagline">Mỹ Phẩm Chính Hãng</p>
         </div>
     </header>
 
@@ -44,7 +47,7 @@
     <section class="hero">
         <div class="container hero__inner">
             <h1 class="hero__title">Tỏa Sáng Với Vẻ Đẹp <span class="hero__accent">Đích Thực</span></h1>
-            <p class="hero__subtitle">Bộ sưu tập mỹ phẩm cao cấp từ các thương hiệu hàng đầu thế giới</p>
+            <p class="hero__subtitle">Bộ sưu tập mỹ phẩm cao cấp từ các thương hiệu hàng đầu</p>
         </div>
     </section>
 
@@ -52,12 +55,9 @@
     <main class="main">
         <div class="container">
 
-            <!-- Category Filters -->
+            <!-- Category Filters (rendered dynamically by JS) -->
             <nav class="filters" id="category-filters" aria-label="Lọc theo danh mục">
-                <button class="filter-btn active" data-category="all">Tất cả</button>
-                <button class="filter-btn" data-category="Skincare">Skincare</button>
-                <button class="filter-btn" data-category="Makeup">Makeup</button>
-                <button class="filter-btn" data-category="Nước hoa">Nước hoa</button>
+                <!-- Buttons sẽ được tạo từ dữ liệu thực tế -->
             </nav>
 
             <!-- Loading State -->
@@ -98,7 +98,10 @@
             <!-- Load More -->
             <div class="load-more hidden" id="load-more-container">
                 <p class="load-more__count" id="product-count"></p>
-                <button class="load-more__btn" id="load-more-btn">Xem thêm sản phẩm</button>
+                <div class="load-more__actions">
+                    <button class="load-more__btn" id="load-more-btn">Xem thêm sản phẩm</button>
+                    <button class="load-more__btn load-more__btn--ghost hidden" id="collapse-btn">Thu gọn ▲</button>
+                </div>
             </div>
 
         </div>

@@ -14,6 +14,11 @@ const SUPABASE_KEY = ''; // e.g., eyJhbGciOiJIUzI1NiIs...
 // Pagination
 const ITEMS_PER_PAGE = 8;
 
+/** Kiểm tra Supabase đã được cấu hình chưa */
+function isSupabaseConfigured() {
+    return SUPABASE_URL.length > 0 && SUPABASE_KEY.length > 0;
+}
+
 // =============================================
 // 📦 SAMPLE DATA (Fallback khi chưa kết nối Supabase)
 // =============================================
@@ -217,6 +222,8 @@ function renderPage() {
     const grid = document.getElementById('product-grid');
     const emptyState = document.getElementById('empty-state');
     const loadMoreContainer = document.getElementById('load-more-container');
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    const collapseBtn = document.getElementById('collapse-btn');
 
     grid.innerHTML = '';
 
@@ -233,13 +240,19 @@ function renderPage() {
         grid.appendChild(createProductCard(product));
     });
 
-    // Show/hide Load More button
+    // Show/hide Load More & Collapse buttons
     const totalShown = pageProducts.length;
     const totalAvailable = filteredProducts.length;
+    const isExpanded = currentPage > 0;
 
-    if (totalShown < totalAvailable) {
+    if (totalShown < totalAvailable || isExpanded) {
         loadMoreContainer.classList.remove('hidden');
         document.getElementById('product-count').textContent = `Đang hiển thị ${totalShown} / ${totalAvailable} sản phẩm`;
+
+        // Load More: ẩn khi đã hiện hết
+        loadMoreBtn.classList.toggle('hidden', totalShown >= totalAvailable);
+        // Thu gọn: chỉ hiện khi đang mở rộng
+        collapseBtn.classList.toggle('hidden', !isExpanded);
     } else {
         loadMoreContainer.classList.add('hidden');
     }
@@ -256,6 +269,13 @@ function loadMore() {
     if (firstNewCard) {
         firstNewCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+}
+
+function collapseProducts() {
+    currentPage = 0;
+    renderPage();
+    // Scroll lên đầu grid
+    document.getElementById('product-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function resetPagination(products) {
@@ -323,10 +343,35 @@ document.addEventListener('keydown', (e) => {
 });
 
 // =============================================
-// 🏷️ CATEGORY FILTER
+// 🏷️ CATEGORY FILTER (Dynamic)
 // =============================================
 let allProducts = [];
 let activeCategory = 'all';
+
+/** Render filter buttons từ danh sách categories thực tế */
+function renderCategoryFilters(products) {
+    const filterContainer = document.getElementById('category-filters');
+    // Lấy unique categories từ dữ liệu
+    const categories = [...new Set(products.map(p => p.category).filter(Boolean))];
+
+    filterContainer.innerHTML = '';
+
+    // Nút "Tất cả" luôn có
+    const allBtn = document.createElement('button');
+    allBtn.className = 'filter-btn active';
+    allBtn.dataset.category = 'all';
+    allBtn.textContent = 'Tất cả';
+    filterContainer.appendChild(allBtn);
+
+    // Render từng category
+    categories.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'filter-btn';
+        btn.dataset.category = cat;
+        btn.textContent = cat;
+        filterContainer.appendChild(btn);
+    });
+}
 
 function setupFilters() {
     const filterContainer = document.getElementById('category-filters');
@@ -353,23 +398,24 @@ function setupFilters() {
 // 🔌 SUPABASE FETCH
 // =============================================
 
-/** Fetch products từ Supabase, fallback sang sample data */
+/** Fetch products từ Supabase, fallback sang sample data CHỈ khi chưa cấu hình */
 async function fetchProducts() {
     const loadingState = document.getElementById('loading-state');
 
-    // Nếu chưa cấu hình Supabase → dùng sample data
-    if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_KEY === 'YOUR_SUPABASE_ANON_KEY') {
-        console.log('⚡ Đang dùng sample data. Hãy cấu hình SUPABASE_URL và SUPABASE_KEY để kết nối database.');
+    // Chưa cấu hình Supabase → dùng sample data (chỉ cho local dev)
+    if (!isSupabaseConfigured()) {
+        console.log('⚡ Chưa cấu hình Supabase. Dùng sample data cho local preview.');
 
-        // Giả lập loading delay
         await new Promise(resolve => setTimeout(resolve, 800));
 
         allProducts = SAMPLE_PRODUCTS;
         loadingState.classList.add('hidden');
+        renderCategoryFilters(allProducts);
         resetPagination(allProducts);
         return;
     }
 
+    // Đã cấu hình → fetch từ Supabase, KHÔNG fallback sample khi lỗi
     try {
         const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const { data, error } = await client.from('products').select('*').order('id', { ascending: true });
@@ -378,16 +424,20 @@ async function fetchProducts() {
 
         allProducts = data || [];
         loadingState.classList.add('hidden');
+        renderCategoryFilters(allProducts);
         resetPagination(allProducts);
 
         console.log(`✅ Đã tải ${allProducts.length} sản phẩm từ Supabase.`);
     } catch (err) {
         console.error('❌ Lỗi kết nối Supabase:', err.message);
-        console.log('↪️ Chuyển sang sample data...');
 
-        allProducts = SAMPLE_PRODUCTS;
         loadingState.classList.add('hidden');
-        resetPagination(allProducts);
+        // Hiện error state thay vì fallback sample data
+        const emptyState = document.getElementById('empty-state');
+        document.getElementById('empty-state').querySelector('.empty-state__icon').textContent = '⚠️';
+        document.getElementById('empty-state').querySelector('.empty-state__text').textContent =
+            'Không thể kết nối đến cơ sở dữ liệu. Vui lòng thử lại sau.';
+        emptyState.classList.remove('hidden');
     }
 }
 
@@ -398,6 +448,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupFilters();
     fetchProducts();
 
-    // Load More button
+    // Load More & Collapse buttons
     document.getElementById('load-more-btn').addEventListener('click', loadMore);
+    document.getElementById('collapse-btn').addEventListener('click', collapseProducts);
 });

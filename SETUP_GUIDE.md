@@ -20,15 +20,30 @@ CREATE TABLE products (
   image_url   TEXT NOT NULL,
   description TEXT,
   fb_link     TEXT NOT NULL DEFAULT 'https://m.me/yourpage',
-  category    TEXT NOT NULL CHECK (category IN ('Skincare', 'Makeup', 'Nước hoa')),
+  category    TEXT NOT NULL,
   status      TEXT NOT NULL DEFAULT 'in_stock' CHECK (status IN ('in_stock', 'out_of_stock', 'incoming', 'pre_order'))
+);
+
+-- Tạo bảng reviews
+CREATE TABLE reviews (
+  id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  customer_name TEXT NOT NULL,
+  image_url     TEXT NOT NULL,
+  product_name  TEXT NOT NULL,
+  rating        INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+  comment       TEXT,
+  created_at    TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Bật Row Level Security
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
 
 -- Cho phép anonymous đọc (public website)
-CREATE POLICY "Allow public read" ON products
+CREATE POLICY "Allow public read products" ON products
+  FOR SELECT USING (true);
+
+CREATE POLICY "Allow public read reviews" ON reviews
   FOR SELECT USING (true);
 ```
 
@@ -52,7 +67,7 @@ Vào **Settings → API** → copy:
 ## 2. Kết nối với Code
 
 ### Cách A: Local Development (test nhanh)
-Mở file `app.js`, thay 2 dòng đầu:
+Mở file `app.js` và `review.js`, thay 2 dòng đầu:
 
 ```js
 const SUPABASE_URL = 'https://xxxx.supabase.co';      // ← thay bằng URL thật
@@ -126,5 +141,6 @@ Browser ──→ Vercel (Static HTML/CSS/JS)
                 │
                 └──→ Supabase PostgreSQL API
                         │
-                        └── products table (RLS enabled)
+                        ├── products table (RLS enabled)
+                        └── reviews table  (RLS enabled)
 ```
