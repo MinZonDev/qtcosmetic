@@ -8,8 +8,8 @@
 // Thay thế bằng giá trị thật từ Supabase Dashboard
 // Khi deploy Vercel, dùng Environment Variables
 // =============================================
-const SUPABASE_URL = '';     // e.g., https://xxxx.supabase.co
-const SUPABASE_KEY = ''; // e.g., eyJhbGciOiJIUzI1NiIs...
+const SUPABASE_URL = 'https://fyaaaobfrjqvhriikmca.supabase.co';     // e.g., https://xxxx.supabase.co
+const SUPABASE_KEY = 'sb_publishable_NKL_VmjtNTtjkFyac5ycXg_pcotsVWS'; // e.g., eyJhbGciOiJIUzI1NiIs...
 
 // Pagination
 const ITEMS_PER_PAGE = 8;

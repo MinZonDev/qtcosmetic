@@ -6,8 +6,8 @@
 // =============================================
 // ⚙️ CONFIGURATION (giống app.js)
 // =============================================
-const SUPABASE_URL = '';     // e.g., https://xxxx.supabase.co
-const SUPABASE_KEY = ''; // e.g., eyJhbGciOiJIUzI1NiIs...
+const SUPABASE_URL = 'https://fyaaaobfrjqvhriikmca.supabase.co';     // e.g., https://xxxx.supabase.co
+const SUPABASE_KEY = 'sb_publishable_NKL_VmjtNTtjkFyac5ycXg_pcotsVWS'; // e.g., eyJhbGciOiJIUzI1NiIs...
 
 function isSupabaseConfigured() {
     return SUPABASE_URL.length > 0 && SUPABASE_KEY.length > 0;
