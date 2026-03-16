@@ -88,7 +88,7 @@ Dùng **Environment Variables** để bảo mật → xem mục 3.
 cd d:\PROJECT\cosmetic
 git init
 git add .
-git commit -m "Initial commit: Luxe Beauty showcase"
+git commit -m "Initial commit: QT Cosmetic showcase"
 git remote add origin https://github.com/YOUR_USERNAME/cosmetic.git
 git push -u origin main
 ```

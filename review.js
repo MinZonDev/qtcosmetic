@@ -1,5 +1,5 @@
 /* ============================================
-   LUXE BEAUTY — Review Page Logic
+   QT COSMETIC — Review Page Logic
    Supabase Integration + Masonry Gallery
    ============================================ */
 
